@@ -41,7 +41,7 @@ docker compose up --build
 API-ключ по умолчанию `secret-api-key` (переопределяется переменной `API_KEY`).
 
 ## Примеры
-
+Лучше тестировать через Swagger)
 Создание платежа:
 
 ```bash
@@ -70,13 +70,13 @@ curl -i -X POST http://localhost:8000/api/v1/payments \
 curl -H "X-API-Key: secret-api-key" http://localhost:8000/api/v1/payments/<payment_id>
 ```
 
-Результат webhook'а видно в логах: `docker compose logs -f webhook-receiver consumer`.
+Результат webhook'а можно посмотреть в логах: `docker compose logs -f webhook-receiver consumer`.
 
 Идемпотентность — повторите первый запрос с тем же `Idempotency-Key`: вернётся тот же `payment_id`, новое событие не создаётся.
 
 ### Проверка retry и DLQ
 
-Укажите `"webhook_url": "http://webhook-receiver:9000/fail"` (всегда 500). В логах consumer будут попытки 1/3 → (5 с) → 2/3 → (10 с) → 3/3, после чего сообщение окажется в очереди `payments.dlq` (RabbitMQ UI → Queues). Платёж при этом остаётся обработанным (статус в БД финальный), не доставлен только webhook.
+Можно протестировать и вебхук написать с фелом `"webhook_url": "http://webhook-receiver:9000/fail"` (всегда 500). В логах consumer будут попытки 1/3 → (5 с) → 2/3 → (10 с) → 3/3, после чего сообщение окажется в очереди `payments.dlq` (RabbitMQ UI → Queues). Платёж при этом остаётся обработанным (статус в БД финальный), не доставлен только webhook.
 
 ## Конфигурация (env)
 
